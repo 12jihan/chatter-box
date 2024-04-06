@@ -1,17 +1,14 @@
 package com.blinktek.game
 
+import com.blinktek.display.Window
+import kotlin.io.println
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.system.MemoryUtil.*
-import kotlin.io.println;
-import org.lwjgl.glfw.GLFW.*
-import org.lwjgl.system.MemoryUtil.NULL
 
 class Game {
 
-    var window: Long = 0;
-    val width: Int = 800;
-    val height: Int = 600;
-    
+    var window: Window = Window()
+
     constructor() {
         println("Game Class Created")
     }
@@ -25,18 +22,12 @@ class Game {
     }
 
     fun init() {
-        init_window()
+        window.init()
     }
 
     fun loop() {
-        println("window: \n" + window.toString())
-        try {
-            println(!glfwWindowShouldClose(window))
-        } catch (e: Exception) {
-            println("Error: " + e)
-        }
-        while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents()
+        while (!glfwWindowShouldClose(window.get_window())) {
+            window.poll_events()
         }
     }
 
@@ -47,7 +38,7 @@ class Game {
     fun render() {}
 
     fun cleanup() {
-        glfwDestroyWindow(window)
+        window.cleanup()
         glfwTerminate()
     }
 
@@ -56,15 +47,4 @@ class Game {
     fun keyboard_input() {}
 
     fun mouse_input() {}
-
-    private fun init_window() {
-        if (!glfwInit()) {
-            throw IllegalStateException("Unable to initialize GLFW.")
-        }
-
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API)
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE)
-        window = glfwCreateWindow(width, height, "Vulkan", NULL, NULL)
-        println("Created window: \n" + window.toString())
-    }
 }
