@@ -34,9 +34,15 @@ dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
 
+    // Tinylog dependecy:
+    implementation("org.tinylog:tinylog:1.3.6")
+    // Joml dependecy:
+    implementation("org.joml:joml:1.10.5")
+    // STB dependecy:
+    implementation("org.lwjgl.osgi:org.lwjgl.stb:3.3.0")
+    
     // LWJL Dependencies:
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
-
 	implementation("org.lwjgl", "lwjgl")
 	implementation("org.lwjgl", "lwjgl-assimp")
 	implementation("org.lwjgl", "lwjgl-glfw")
@@ -50,6 +56,7 @@ dependencies {
 	implementation("org.lwjgl", "lwjgl-xxhash")
 	implementation("org.lwjgl", "lwjgl-yoga")
 	implementation("org.lwjgl", "lwjgl-zstd")
+
 	runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)
 	runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = lwjglNatives)
 	runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)

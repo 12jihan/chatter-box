@@ -6,7 +6,7 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWVulkan.*
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.*
-import org.lwjgl.vulkan.VK10.*
+import org.lwjgl.vulkan.VK13.*
 import org.lwjgl.vulkan.VkApplicationInfo
 import org.lwjgl.vulkan.VkInstanceCreateInfo
 import java.nio.ByteBuffer
@@ -73,7 +73,7 @@ class Game {
                         applicationVersion(VK_MAKE_VERSION(1, 0, 0))
                         pEngineName(stack.UTF8("No Engine"))
                         engineVersion(VK_MAKE_VERSION(1, 0, 0))
-                        apiVersion(VK_API_VERSION_1_0)
+                        apiVersion(VK_API_VERSION_1_3)
                     }
 
             // Directly allocate the VkInstanceCreateInfo structure on the stack
