@@ -1,15 +1,16 @@
 package com.blinktek.game
 
 import com.blinktek.display.Window
+import java.nio.Buffer
 import kotlin.io.println
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWVulkan.*
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.*
+import org.lwjgl.vulkan.KHRSurface.VK_KHR_SURFACE_EXTENSION_NAME
 import org.lwjgl.vulkan.VK13.*
 import org.lwjgl.vulkan.VkApplicationInfo
 import org.lwjgl.vulkan.VkInstanceCreateInfo
-import java.nio.ByteBuffer
 
 class Game {
 
@@ -55,53 +56,43 @@ class Game {
     fun mouse_input() {}
 
     fun init_vulkan() {
-        create_instance()
+        vk_create_instance()
     }
 
-    fun create_instance() {
+    fun vk_create_instance(): Long {
         MemoryStack.stackPush().use { stack ->
-            val glfwExtensions = glfwGetRequiredInstanceExtensions()
-            if (glfwExtensions == null) {
-                throw RuntimeException("Failed to get required extensions")
+
+            // Application info setup:
+            val appInfo: VkApplicationInfo = VkApplicationInfo.calloc(stack)
+            appInfo.sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)
+            appInfo.pApplicationName(stack.UTF8("Hello Triangle"))
+            appInfo.applicationVersion(VK_MAKE_VERSION(1, 0, 0))
+            appInfo.pEngineName(stack.UTF8("No Engine"))
+            appInfo.engineVersion(VK_MAKE_VERSION(1, 0, 0))
+            appInfo.apiVersion(VK_API_VERSION_1_3)
+
+            // Instance create info setup:
+            val createInfo = VkInstanceCreateInfo.calloc(stack)
+            createInfo.sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
+            createInfo.pApplicationInfo(appInfo)
+
+            // Specify global extensions and validation layers:
+            val extensionName = stack.UTF8Safe(VK_KHR_SURFACE_EXTENSION_NAME)
+            if (extensionName == null) {
+                throw RuntimeException("Required extens name is null")
             }
-            val extensionCount = glfwExtensions.remaining()
+            val extensions = stack.pointers(extensionName as Buffer)
+            createInfo.ppEnabledExtensionNames(extensions)
 
-            val appInfo: VkApplicationInfo =
-                    VkApplicationInfo.calloc(stack).apply {
-                        sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)
-                        pApplicationName(stack.UTF8("Hello Triangle"))
-                        applicationVersion(VK_MAKE_VERSION(1, 0, 0))
-                        pEngineName(stack.UTF8("No Engine"))
-                        engineVersion(VK_MAKE_VERSION(1, 0, 0))
-                        apiVersion(VK_API_VERSION_1_3)
-                    }
-
-            // Directly allocate the VkInstanceCreateInfo structure on the stack
-            val createInfo =
-                    VkInstanceCreateInfo.calloc(stack).apply {
-                        sType(VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
-                        pApplicationInfo(appInfo)
-                        ppEnabledExtensionNames(glfwExtensions)
-                    }
-
+            // Create the vulkan instance:
             val pInstance = stack.mallocPointer(1)
-            val result = vkCreateInstance(createInfo, null, pInstance)
-            if (result != VK_SUCCESS) {
-                throw RuntimeException("Failed to create Vulkan instance: error code $result")
-            }
-            val pExtensionCount = stack.mallocInt(1)
-
-            val err =
-                    vkEnumerateInstanceExtensionProperties(
-                            null as ByteBuffer?,
-                            pExtensionCount,
-                            null
-                    )
+            val err = vkCreateInstance(createInfo, null, pInstance)
             if (err != VK_SUCCESS) {
-                throw RuntimeException(
-                        "Failed to get the number of Vulkan instance extension properties: error code $err"
-                )
+                throw RuntimeException("Failed to create Vulkan instance: error code $err")
             }
+
+            // Return the created instance:
+            return pInstance.get(0)
         }
     }
 }
