@@ -12,7 +12,7 @@ import org.lwjgl.vulkan.VK13.*
 class Game {
 
     var window: Window = Window()
-    var vk_instance: VkManager = VkManager()
+    var vk_instance: VkInstanceManager = VkInstanceManager()
 
     constructor() {
         println("Game Class Created")
